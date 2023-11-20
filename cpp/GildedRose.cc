@@ -7,78 +7,63 @@ GildedRose::GildedRose(::std::vector<Item> const& items) : items(items)
 GildedRose::GildedRose(::std::vector<Item> && items) : items(::std::move(items))
 {}
 
-void GildedRose::updateQuality()
-{
-    for (int i = 0; i < items.size(); i++)
-    {
-        if (items[i].name != "Aged Brie" && items[i].name != "Backstage passes to a TAFKAL80ETC concert")
-        {
-            if (items[i].quality > 0)
-            {
-                if (items[i].name != "Sulfuras, Hand of Ragnaros")
-                {
-                    items[i].quality = items[i].quality - 1;
-                }
-            }
-        }
-        else
-        {
-            if (items[i].quality < 50)
-            {
-                items[i].quality = items[i].quality + 1;
+void GildedRose::updateQuality() {
+    for (int i = 0; i < items.size(); i++) {
+        updateItemQuality(items[i]);
+    }
+}
 
-                if (items[i].name == "Backstage passes to a TAFKAL80ETC concert")
-                {
-                    if (items[i].sellIn < 11)
-                    {
-                        if (items[i].quality < 50)
-                        {
-                            items[i].quality = items[i].quality + 1;
-                        }
-                    }
+void GildedRose::updateItemQuality(Item& item) {
+    if (item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert" && item.name != "Sulfuras, Hand of Ragnaros") {
+        updateNormalItem(item);
+    }
+    else if (item.name == "Aged Brie") {
+        updateAgedBrie(item);
+    }
+    else if (item.name == "Backstage passes to a TAFKAL80ETC concert") {
+        updateBackstagePass(item);
+    }
+}
 
-                    if (items[i].sellIn < 6)
-                    {
-                        if (items[i].quality < 50)
-                        {
-                            items[i].quality = items[i].quality + 1;
-                        }
-                    }
-                }
-            }
+void GildedRose::updateNormalItem(Item& item) {
+    if (item.quality > 0) {
+        if (item.name != "Sulfuras, Hand of Ragnaros") {
+            item.quality--;
+        }
+    }
+    item.sellIn--;
+
+    if (item.sellIn < 0 && item.quality > 0 && item.name != "Sulfuras, Hand of Ragnaros") {
+        item.quality--;
+    }
+}
+
+void GildedRose::updateAgedBrie(Item& item) {
+    if (item.quality < 50) {
+        item.quality++;
+    }
+    item.sellIn--;
+
+    if (item.sellIn < 0 && item.quality < 50) {
+        item.quality++;
+    }
+}
+
+void GildedRose::updateBackstagePass(Item& item) {
+    if (item.quality < 50) {
+        item.quality++;
+
+        if (item.sellIn < 11 && item.quality < 50) {
+            item.quality++;
         }
 
-        if (items[i].name != "Sulfuras, Hand of Ragnaros")
-        {
-            items[i].sellIn = items[i].sellIn - 1;
+        if (item.sellIn < 6 && item.quality < 50) {
+            item.quality++;
         }
+    }
+    item.sellIn--;
 
-        if (items[i].sellIn < 0)
-        {
-            if (items[i].name != "Aged Brie")
-            {
-                if (items[i].name != "Backstage passes to a TAFKAL80ETC concert")
-                {
-                    if (items[i].quality > 0)
-                    {
-                        if (items[i].name != "Sulfuras, Hand of Ragnaros")
-                        {
-                            items[i].quality = items[i].quality - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    items[i].quality = items[i].quality - items[i].quality;
-                }
-            }
-            else
-            {
-                if (items[i].quality < 50)
-                {
-                    items[i].quality = items[i].quality + 1;
-                }
-            }
-        }
+    if (item.sellIn < 0) {
+        item.quality = 0;
     }
 }

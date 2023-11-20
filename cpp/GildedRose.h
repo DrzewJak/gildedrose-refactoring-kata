@@ -20,5 +20,11 @@ public:
     explicit GildedRose(::std::vector<Item> const& items);
 
     void updateQuality();
+
+private:
+    void updateItemQuality(Item& item);
+    void updateNormalItem(Item& item);
+    void updateAgedBrie(Item& item);
+    void updateBackstagePass(Item& item);
 };
 
